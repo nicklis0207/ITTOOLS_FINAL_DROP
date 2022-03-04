@@ -1,0 +1,6 @@
+---
+# vars file for send_csr
+#
+key_path: /etc/pki/tls/private/{{ ansible_hostname }}.key
+
+request_path: /etc/pki/tls/private/{{ ansible_hostname }}.csr

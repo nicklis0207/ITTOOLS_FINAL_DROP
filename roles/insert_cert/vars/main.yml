@@ -1,0 +1,8 @@
+---
+# vars file for insert_cert
+#
+remote_private_key_path: /etc/pki/tls/private/{{ ansible_hostname }}.key
+
+remote_cert_path: /etc/pki/tls/certs/{{ ansible_hostname }}.crt
+
+remote_pem_file_path: /etc/pki/tls/certs/{{ ansible_hostname }}.pem

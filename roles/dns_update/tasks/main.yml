@@ -1,0 +1,16 @@
+---
+# tasks file for dns_update
+#
+
+- name: Make Sure The /etc/resolv.conf Configured Correctly
+  blockinfile:
+    state: present
+    dest: /etc/resolv.conf
+    content: '{{ resolv_regex }}'
+
+- name: Edit The Hosts File
+  blockinfile:
+    state: present
+    dest: /etc/hosts
+    content: '{{ hosts_content }}'
+

@@ -1,0 +1,43 @@
+---
+# tasks file for haproxy
+
+- name: Installing Haproxy
+  yum:
+    name: haproxy
+    state: present
+
+- name: Start Firewalld Service
+  shell: systemctl start firewalld
+  notify: Restart firewalld
+
+- name: Permit Traffic In Default Zone For Services
+  firewalld:
+    service: '{{ item }}'
+    permanent: yes
+    state: enabled
+  loop:
+    - http
+    - https
+  notify: Restart firewalld
+
+- name: Copying The Demo File
+  template:
+    src: /etc/ansible/roles/haproxy/templates/haproxy_jinja.j2
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: Edit The Rsyslog File
+  blockinfile:
+    state: present
+    dest: /etc/rsyslog.conf
+    content: '{{ rsyslog_regex }}'
+
+- name: Restart rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+
+- name: Start The Haproxy Service
+  service:
+    name: haproxy
+    state: restarted
+    enabled: yes

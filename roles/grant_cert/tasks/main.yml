@@ -1,0 +1,28 @@
+---
+# tasks file for grant_cert
+#
+- name: Ensure Directory Eists
+  file:
+    path: /etc/pki/remote_crt
+    state: directory
+    mode: 0775
+
+- name: Generate a Certificate To HAProxy Servers
+  openssl_certificate:
+    path: "{{ remote_cert_path }}"                #the path of the future cerificates in the CA server
+    csr_path: "{{ remote_request_path }}"
+    provider: ownca
+    ownca_path: "{{ CA_cert_path }}"              #the path of the CA root cerificate
+    ownca_privatekey_path: "{{ key_path }}"
+  loop:
+    - hap1
+    - hap2
+
+- name: Fetch The Certificates From CA server To Ansible Master
+  fetch:
+    src: "{{ remote_cert_path }}"
+    dest: /etc/ansible/remote_crt/{{ item }}/
+    flat: yes
+  loop:
+    - hap1
+    - hap2

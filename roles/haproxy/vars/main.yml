@@ -1,0 +1,28 @@
+---
+# vars file for haproxy
+
+# In Template Conf
+remote_pem_file_path: /etc/pki/tls/certs/{{ ansible_hostname }}.pem
+
+listen_port: 80
+
+ssl_listen_port: 443
+
+cats_food_ip: 192.168.87.110
+
+big_head_ip: 192.168.87.120
+
+cats_food_hostname: 'cfweb'
+
+big_head_hostname: 'bhweb'
+
+rsyslog_regex: |
+
+  # FOR THE ITTOOLS EXERCISE: \n
+  # Provides UDP syslog reception \n
+  $ModLoad imudp
+  $UDPServerRun 514
+ 
+  # HAProxy Logging
+  local2.*        /var/log/haproxy.log
+            

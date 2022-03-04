@@ -1,0 +1,46 @@
+---
+# tasks file for send_csr
+#
+
+- name: Install Lot Of Things
+  yum:
+      name:
+        - openssl
+        - openssl-devel
+        - mod_ssl
+        - wget
+        - elinks                            #Add CA Certificate to CentOS 7 clients Trusted Store
+      state: latest
+
+- name: wget python2-cryptography
+  shell : wget http://mirror.centos.org/centos/7/os/x86_64/Packages/python2-cryptography-1.7.2-2.el7.x86_64.rpm
+
+- name: Install python2-cryptography
+  yum:
+    name: python2-cryptography
+
+- name: Ensure Directory Exists
+  file:
+    path: /etc/pki/tls
+    state: directory
+    mode: 0775
+
+- name: Generate An OpenSSL Private Key
+  openssl_privatekey:
+    path: "{{ key_path }}"
+    size: 1024
+
+- name: Generate CSR
+  openssl_csr:
+    path: "{{ request_path }}"
+    privatekey_path: "{{ key_path }}"
+    common_name: "*.thepooh.com"
+    country_name: IL
+    organizational_unit_name: TAAS
+    organization_name: THEPOOH_CORP
+
+- name: Fetch The Keys From Remote Hosts To Ansible Master
+  fetch:
+    src: "{{ request_path }}"
+    dest: /etc/ansible/remote_csr/{{ ansible_hostname }}/
+    flat: yes

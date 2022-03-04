@@ -1,0 +1,17 @@
+---
+# vars file for dns_update
+
+# ADDED CONTENT IN RESOLV.CONF
+resolv_regex: |
+  nameserver 8.8.8.8
+  search localdomain
+
+# THE HOSTS CONTENT:
+hosts_content: |
+ #192.168.87.100 ansible_controller.thepooh.com ansible_controller
+ #192.168.87.110 cfweb.thepooh.com cfweb
+ #192.168.87.120 bhweb.thepooh.com bhweb
+ #192.168.87.130 hap1.thepooh.com hap1
+ #192.168.87.140 hap2.thepooh.com hap2
+ #192.168.87.150 ca.thepooh.com ca
+ 192.168.87.42 cfweb.thepooh.com bhweb.thepooh.com

@@ -1,0 +1,44 @@
+# THE FINAL IT TOOLS EXERCISE
+---
+
+- name: Set The /etc/hosts
+  hosts: all
+  roles:
+    - dns_update
+
+- name: CONFIGURE Webservers
+  hosts: apache_webservers
+  roles:
+    - apache
+
+- name: CONFIGURE Haproxy
+  hosts: haproxy_servers
+  roles:
+    - haproxy
+
+- name: CONFIGURE Keepalived
+  hosts: haproxy_servers
+  roles:
+    - keepalived
+
+# HERE STARTS THE CEERTIFICATE PART:
+
+- name: Send Certificate Requests To Controller
+  hosts: haproxy_servers
+  roles:
+    - send_csr
+
+- name: Create Root CA
+  hosts: ca
+  roles:
+    - ssl
+
+- name: Grant Certificates To Hosts
+  hosts: ca
+  roles:
+    - grant_cert
+
+- name: Copy Finished Certificates To HAProxy Servers
+  hosts: haproxy_servers
+  roles:
+    - insert_cert

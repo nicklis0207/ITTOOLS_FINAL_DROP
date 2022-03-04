@@ -1,0 +1,58 @@
+---
+# tasks file for ssl
+#
+- name: Install lot of things
+  yum:
+    name:
+      - openssl
+      - openssl-devel
+      - mod_ssl
+      - wget
+    state: latest
+
+- name: wget python2-cryptography
+  shell : wget http://mirror.centos.org/centos/7/os/x86_64/Packages/python2-cryptography-1.7.2-2.el7.x86_64.rpm
+
+- name: Install python2-cryptography
+  yum:
+    name: python2-cryptography
+
+- name: Ensure directory exists
+  file:
+    path: /etc/pki/remote_csr
+    state: directory
+    mode: 0775
+
+- name: Generate an OpenSSL private key
+  openssl_privatekey:
+    path: "{{ key_path }}"
+    size: 2048
+
+- name: Generate CSR
+  openssl_csr:
+    path: "{{ request_path }}"
+    privatekey_path: "{{ key_path }}"
+    common_name: "*.thepooh.com"
+    country_name: IL
+    organizational_unit_name: TAAS
+    organization_name: THEPOOH_CORP
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "{{ cert_path }}"
+    privatekey_path: "{{ key_path }}"
+    csr_path: "{{ request_path }}"
+    provider: selfsigned
+
+
+
+- name: Copy All Remotehosts Keys To Ca Server
+  copy:
+    src: /etc/ansible/remote_csr/
+    dest: /etc/pki/remote_csr/
+
+- name: Fetch the certificate from ROOT CA SERVER to ansible master
+  fetch:
+    src: "{{ cert_path }}"
+    dest: /etc/ansible/CA_CERT/ca_master.crt
+    flat: yes

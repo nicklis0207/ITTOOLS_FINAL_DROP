@@ -1,0 +1,8 @@
+---
+# vars file for ssl
+#
+cert_path: /etc/pki/CA/certs/ca_master.crt
+
+request_path: /etc/pki/CA/certs/ca_master.csr
+
+key_path: /etc/pki/CA/private/ca_master.key

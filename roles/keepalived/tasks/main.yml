@@ -1,0 +1,40 @@
+---
+# tasks file for keepalived
+#
+
+- name: Install Keepalived
+  yum:
+    name: keepalived
+    state: present
+
+- name: Set state And priority Variables When hap1
+  set_fact:
+    state: "MASTER"
+    priority: "101"
+  when: ansible_hostname == "hap1"
+
+- name: Set state And priority Variables When hap2
+  set_fact:
+    state: "BACKUP"
+    priority: "100"
+  when: ansible_hostname == "hap2"
+
+- name: Ensure keepalived Conf Is Set
+  template:
+    src: /etc/ansible/roles/keepalived/templates/keepalived_jinja.j2
+    dest: /etc/keepalived/keepalived.conf
+
+- name: Add Rich Rule For Vrrp Protocol
+  firewalld:
+    rich_rule: rule protocol value="vrrp" accept
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Start The Keepalived Service
+  service:
+    name: keepalived
+    state: restarted
+    enabled: yes
+  notify: Restart Haproxy

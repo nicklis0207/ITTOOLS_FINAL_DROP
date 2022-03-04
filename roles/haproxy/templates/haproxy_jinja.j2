@@ -1,0 +1,48 @@
+global
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats level admin
+
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+
+# EXERCISE FOR ITTOOLS
+# HAProxy Load Balancer for Apache Web Server
+
+frontend HAp-balancer
+ bind *:{{ ssl_listen_port }} ssl crt {{ remote_pem_file_path }}
+# bind *:{{ listen_port }}
+ mode http
+ use_backend %[req.hdr(Host),lower]
+
+backend cfweb.thepooh.com
+ server {{ cats_food_hostname }} {{ cats_food_ip }}:{{ listen_port }} check
+# server {{ cats_food_hostname }} {{ cats_food_ip }}:{{ listen_port }} check
+
+backend bhweb.thepooh.com
+ server {{ big_head_hostname }} {{ big_head_ip }}:{{ listen_port }} check
+# server {{ big_head_hostname }} {{ big_head_ip }}:{{ listen_port }} check

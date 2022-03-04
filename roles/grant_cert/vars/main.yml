@@ -1,0 +1,15 @@
+---
+# vars file for grant_cert
+#
+
+# The path to the CA certificate:
+CA_cert_path: /etc/pki/CA/certs/ca_master.crt
+
+# The path of each certificate request of the remote hosts:
+remote_request_path: /etc/pki/remote_csr/{{ item }}/{{ item }}.csr
+
+# The path to the CA private key:
+key_path: /etc/pki/CA/private/ca_master.key
+
+# The path to the new made Certificates of the remote hosts in the CA SERVER:
+remote_cert_path: /etc/pki/remote_crt/{{ item }}.crt

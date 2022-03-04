@@ -1,0 +1,7 @@
+---
+# handlers file for insert_cert
+
+- name: Restart firewalld
+  service:
+    name: firewalld
+    state: restarted

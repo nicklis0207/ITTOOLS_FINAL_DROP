@@ -1,0 +1,46 @@
+---
+# tasks file for apache
+#
+- name: Installing Apache
+  yum:
+    name: httpd
+    state: present
+
+- name: Start Firewalld Service
+  service:
+    name: firewalld
+    state: started
+
+- name: Permit Traffic In Default Zone For Some Services
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop:
+    - http
+    - https
+  notify: Restart firewalld
+
+- name: Set Color Variable When cats_food
+  set_fact:
+    color: "IndianRed"
+  when: ansible_hostname == "cfweb"
+
+- name: Set Color Variable When big_head
+  set_fact:
+    color: "SeaGreen"
+  when: ansible_hostname == "bhweb"
+
+- name: Copying The Demo File
+  template:
+    src: /etc/ansible/roles/apache/templates/index_jinja.j2
+    dest: /var/www/html/index.html
+    owner: apache
+    group: apache
+    mode: 0644
+
+- name: Enable Apache On System Boot
+  service:
+    name: httpd
+    enabled: yes
+  notify: Restart apache
